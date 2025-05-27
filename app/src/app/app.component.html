@@ -1,0 +1,92 @@
+<div class="chat-container">
+  <div class="chat-wrapper">
+
+    <div class="chat-header"></div>
+
+    <div class="conversation-date-line">
+      {{ conversationStart | date: 'yyyy MMMM dd' : '' : 'lt' }}
+    </div>
+
+    <!-- Scrollable message area -->
+    <div class="chat-messages" #chatMessages>
+      <div *ngFor="let msg of messages; let i = index" (mouseenter)="msg.sender === 'ai' && onHoverAI(i)"
+        [ngClass]="{'chat-bubble': true, 'user': msg.sender === 'user', 'ai': msg.sender === 'ai'}">
+
+
+        <div *ngIf="msg.sender === 'ai'" class="ai-badge">AI</div>
+        <!-- Text message -->
+        <div *ngIf="msg.text" [innerHTML]="formatMarkdown(msg.text)"></div>
+
+        <!-- <span *ngIf="msg.text">{{ msg.text }}</span> -->
+
+        <!-- File name -->
+        <span *ngIf="msg.fileName"><br *ngIf="msg.text">📎 {{ msg.fileName }}</span>
+        <div class="timestamp">{{ msg.timestamp | date:'HH:mm' }}</div>
+
+
+        <div *ngIf="msg.sender === 'ai' && hoveredAiIndex === i && !msg.feedback && i != 0" class="ai-feedback-row">
+          <button (click)="onFeedback(i, 'positive')">👍</button>
+          <button (click)="onFeedback(i, 'negative')">👎</button>
+        </div>
+        <!-- Feedback buttons on hover -->
+        <div *ngIf="msg.sender === 'ai' && msg.feedback === 'positive'" class="ai-feedback-row">
+          <button class="selected">👍</button>
+        </div>
+
+        <div *ngIf="msg.sender === 'ai' && msg.feedback === 'negative'" class="ai-feedback-row">
+          <button class="selected">👎</button>
+        </div>
+
+      </div>
+
+      <div *ngIf="loading" class="message-container ai" id="ai-typing">
+
+        <div class="chat-bubble ai typing">
+
+          <div class="ai-badge">AI</div>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      <div style="height: 5rem;"></div>
+    </div>
+
+    <div class="chat-prompts">
+      <button type="button" (click)="usePrompt('Pradėti naują pokalbį')">🗣️ Pradėti naują pokalbį</button>
+      <button type="button" (click)="usePrompt('Paklausti apie receptą')">💊 Paklausti apie receptą</button>
+      <button type="button" (click)="usePrompt('Įkelti PDF receptą')">📄 Įkelti PDF receptą</button>
+    </div>
+
+
+    <!-- Input fixed at the bottom -->
+    <form class="chat-input" (ngSubmit)="onSubmit()">
+      <textarea #autosize placeholder="Rašykite žinutę..." [(ngModel)]="message" name="message" class="text-message"
+        (keydown)="onKeyDown($event)" rows="1" (input)="autoResizeTextArea(autosize)"></textarea>
+
+      <div class="button-wrapper">
+        <div class="file-upload-wrapper">
+          <!-- Hidden real input -->
+          <input type="file" id="fileInput" class="input-file-hidden" (change)="onFileSelected($event)" accept=".pdf" #fileInputRef />
+
+          <!-- Custom button using PNG icon -->
+          <label for="fileInput" class="file-upload-button">
+            <img src="icons/attach.png" alt="Įkelti PDF" class="upload-icon" />
+          </label>
+
+          <!-- Display filename if selected -->
+          <span *ngIf="selectedFile" class="file-name">
+            {{ selectedFile.name }}
+          </span>
+        </div>
+
+
+        <button class="send-button" type="submit">
+          <img src="icons/send.png" alt="Siųsti" class="send-icon" />
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
