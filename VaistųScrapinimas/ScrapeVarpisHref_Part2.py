@@ -7,7 +7,7 @@ import string
 import time
 
 url = "https://vapris.vvkt.lt/vvkt-web/public/medications"
-savePath = "urpath/"
+savePath = "C:/Users/Daiva/Desktop/Magistro darbas/Dirbtinio intelekto projektų valdymas/docker postgress/VaistųScrapinimas/"
 async def StartUp(browser):
     context = await browser.new_context()
     return context

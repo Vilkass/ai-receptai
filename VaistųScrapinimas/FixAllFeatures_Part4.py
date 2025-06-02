@@ -6,7 +6,7 @@ import re
 import string
 import time
 
-savePath = "urpath/"
+savePath = "C:/Users/Daiva/Desktop/Magistro darbas/Dirbtinio intelekto projektų valdymas/docker postgress/VaistųScrapinimas/"
 
 def ReadExcelFile():
     filename = savePath+"VaistaiSuInfoFinal.xlsx"
@@ -117,7 +117,9 @@ def main():
         df.at[index, "vartojimoBudas"] = row["vartojimoBudas"].strip()
         df.at[index, "use_method_id"] = get_use_method_id(row["vartojimoBudas"])
         df.at[index, "vaistine"] = get_vaistine_id(row["vaistine"])
-        df.at[index, "kaina"] = row["kaina"].replace("€", "").strip()
+        row["kaina"] = row["kaina"]+"emptyText"
+        row["kaina"] = row["kaina"].split("€")[0]
+        df.at[index, "kaina"] = row["kaina"].strip()
         df.at[index, "drug_type_id"] = get_drug_type_id(row["tipas"])
     sells_df = df[['vaistine', 'vaprisHref',"kaina"]]    
     #CreateVaistiniuDiffrence(df)
@@ -135,7 +137,7 @@ def main():
     df["drug_subgroup_id"] = "null"
     df["base_price"] = "-1"
 
-    df=df[["medicine_id","name","active_substance","strength","formative_form_id","use_method_id","drug_type_id","atc_code","atc_name","drug_subgroup_id","quantity","paper","base_price"]]
+    df=df[["medicine_id","name","active_substance","strength","formative_form_id","use_method_id","drug_type_id","atc_code","atc_name","drug_subgroup_id","quantity","paper","base_price","vartojimoInstrukcijos"]]
     
     # Replace vaprisHref in sells_df with corresponding medicine_id from df
     href_to_id = dict(zip(df["paper"], df["medicine_id"]))
@@ -145,7 +147,7 @@ def main():
     saveDFToExcel(sells_df, filename="VaistinesInfo-sells")
 
     # Save df to txt as SQL INSERT statements
-    txt_filename = "C:/Users/Daiva/Desktop/Magistro darbas/Dirbtinio intelekto projektų valdymas/docker postgress/ParuostaDataSQL-inserts.txt"
+    txt_filename = savePath+"ParuostaDataSQL-inserts.txt"
     with open(txt_filename, "w", encoding="utf-8") as f:
         for _, row in df.iterrows():
             values = []
@@ -161,7 +163,7 @@ def main():
             f.write(insert_stmt + "\n")
 
     # Save sells_df to txt as SQL INSERT statements
-    sells_txt_filename = "C:/Users/Daiva/Desktop/Magistro darbas/Dirbtinio intelekto projektų valdymas/docker postgress/VaistinesInfo-sells-inserts.txt"
+    sells_txt_filename = savePath+"VaistinesInfo-sells-inserts.txt"
     with open(sells_txt_filename, "w", encoding="utf-8") as f:
         for idx, row in sells_df.iterrows():
             vaistine = row["vaistine"] if not pd.isna(row["vaistine"]) else "NULL"

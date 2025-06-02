@@ -6,7 +6,7 @@ import re
 import string
 import time
 
-savePath = "urpath/"
+savePath = "C:/Users/Daiva/Desktop/Magistro darbas/Dirbtinio intelekto projektų valdymas/docker postgress/VaistųScrapinimas/"
 def ReadExcelFile():
     filename = savePath+"VaistaiSuInfo.xlsx"
     if os.path.exists(filename):
